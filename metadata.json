@@ -1,0 +1,9 @@
+{
+  "uuid": "wallapocket@inbalboa.github.io",
+  "name": "Wallapocket",
+  "description": "Wallabag integration for GNOME Shell - save links and view articles",
+  "version": 1,
+  "shell-version": ["48"],
+  "url": "https://github.com/inbalboa/wallapocket",
+  "settings-schema": "org.gnome.shell.extensions.wallapocket"
+}

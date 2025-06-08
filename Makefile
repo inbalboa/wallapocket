@@ -13,9 +13,8 @@ pub:
 	@printf "==> pushing...\n"
 	@git push --atomic origin main "v$(TAG)"
 
-install: package
+install:
 	@printf "==> installing locally...\n"
-	@glib-compile-schemas schemas
 	@gnome-extensions install --force $(UUID).shell-extension.zip
 	@printf "Restart Gnome Shell session\n"
 
@@ -26,17 +25,26 @@ uninstall:
 reinstall: uninstall install
 	@printf "==> reinstalling locally...\n"
 
-package:
+clean:
+	@printf "==> cleaning...\n"
+	@rm -f $(UUID).shell-extension.zip
+	@rm -f schemas/gschemas.compiled
+
+build: clean
 	@printf "==> packaging...\n"
+	@glib-compile-schemas schemas
 	@gnome-extensions pack --force \
-	--extra-source="LICENSE.md" \
-	--extra-source="wallabagApi.js" \
-	--extra-source="deleteConfirmation.js" \
-	--extra-source="quickSave.js" \
-	--extra-source="item.js"
+	--extra-source="LICENSE" \
+	--extra-source="api.js" \
+	--extra-source="delete.js" \
+	--extra-source="save.js" \
+	--extra-source="item.js" \
+	--extra-source="editTitle.js" \
+	--extra-source="notifications.js" \
+	--extra-source="icons"
 
 release: check tag pub
 	@printf "\nPublished at %s\n\n" "`date`"
 
-.DEFAULT_GOAL := package
-.PHONY: check tag pub install uninstall reinstall package release
+.DEFAULT_GOAL := build
+.PHONY: check tag pub install uninstall reinstall clean build release

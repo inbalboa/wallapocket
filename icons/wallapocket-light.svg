@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   enable-background="new 0 0 200 69"
+   height="25"
+   viewBox="0 0 25 25"
+   width="25"
+   version="1.1"
+   id="svg24"
+   sodipodi:docname="logo-wallabag@2x.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs28" />
+  <sodipodi:namedview
+     id="namedview26"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="6.55"
+     inkscape:cx="5.8778626"
+     inkscape:cy="43.053435"
+     inkscape:window-width="1534"
+     inkscape:window-height="929"
+     inkscape:window-x="66"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g22" />
+  <g
+     fill="#ffffff"
+     id="g22"
+     transform="translate(-31.96,1.2975596e-4)">
+    <path
+       d="m 32.036336,21.558382 c 0.819,-0.503 5.232,-2.849 12.354,0.091 7.325,3.022 11.87,0.397 12.434,0.04 -1.771,-2.911 -3.876,-5.445 -6.206,-7.148 0.156,-0.043 0.314,-0.086 0.481,-0.135 3.088,-0.894 3.872,-3.508 4.038,-5.7470003 0.186,-2.54 0.315,-2.579 0.867,-4.864 0.53,-2.194 -0.061,-2.633 -0.605,-2.19 -0.293,0.238 -2.846,0.828 -4.36,2.008 -2.444,1.908 -3.951,5.5339999 -4.634,7.5390003 -0.013,0.031 -0.105,0.31 -0.136,0.406 -0.318,0.768 -0.953,0.766 -0.953,0.766 -0.308,-0.034 -0.616,-0.051 -0.927,-0.051 -0.277,0 -0.553,0.015 -0.829,0.041 -0.006,10e-4 -0.009,0 -0.016,0 -0.81,0.12 -1.256,-0.87 -1.349,-1.105 -0.947,-2.7200003 -3.494,-8.0820003 -9.22,-9.5240003 0,0 -1.04,-0.79600001 -0.723,0.551 0.302,1.287 0.925,2.588 0.787,4.481 -0.063,0.874 -0.605,5.3540003 3.512,7.6850003 0.391,0.222 0.738,0.408 1.051,0.564 -2.071,1.66 -3.954,3.97 -5.566,6.592 z"
+       id="path2" />
+  </g>
+</svg>

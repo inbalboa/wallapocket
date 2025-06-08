@@ -1,86 +1,72 @@
-# Wallapocket - Wallabag GNOME Shell Extension
+# Wallapocket
 
-A GNOME Shell extension that integrates with Wallabag, allowing you to quickly save links and view your saved articles directly from the top panel.
+A GNOME Shell extension that provides quick access to your Wallabag articles directly from your desktop panel.
 
 ## Features
 
-- **Quick Save**: Save URLs to Wallabag with a simple dialog
-- **Recent Articles**: View your most recent saved articles in the panel menu
-- **One-click Access**: Click on articles to open them in your default browser
-- **Configurable Settings**: Set up your Wallabag server, credentials, and preferences
-- **Auto-refresh**: Automatically refresh the articles list at configurable intervals
+- Quick access to your Wallabag articles from the GNOME panel
+- Auto-refresh articles at configurable intervals
+- Quick save new articles with optional title
+- Article management
+- Configurable notifications
 
 ## Installation
 
-1. Clone or download this repository
-2. Copy the extension to your extensions directory:
-   ```bash
+### Manual Installation
+
+1. Clone this repository and install the extension:
+   ```sh
+   git clone https://github.com/inbalboa/wallapocket.git
+   cd wallapocket
    make install
-   ```
-3. Restart GNOME Shell
-4. Enable the extension in GNOME Extensions app
+2. Restart GNOME Shell
+3. Enable the extension in GNOME Extensions app
 
 ## Configuration
 
-Before using the extension, you need to configure your Wallabag connection:
-
-1. Open the extension settings (via the panel menu or GNOME Extensions app)
-2. Enter your Wallabag server details:
-   - **Server URL**: Your Wallabag instance URL (e.g., https://app.wallabag.it)
-   - **Client ID**: OAuth client ID from Wallabag
-   - **Client Secret**: OAuth client secret from Wallabag
-   - **Username**: Your Wallabag username
-   - **Password**: Your Wallabag password
-
-### Getting OAuth Credentials
-
-To get your OAuth credentials:
-
-1. Log into your Wallabag instance
-2. Go to Settings → API clients management
-3. Create a new client
-4. Use the generated Client ID and Client Secret in the extension settings
+1. Open GNOME Extensions app
+2. Find Wallapocket and click the settings icon
+3. Configure the following settings:
+   - Wallabag server URL
+   - API credentials (Client ID, Client Secret)
+   - Username and password
+   - Refresh interval
+   - Maximum number of articles to display
+   - Notification preferences
+   - Article action buttons visibility
 
 ## Usage
 
-- **Save a link**: Click the extension icon and select "Quick Save URL"
-- **View articles**: Click the extension icon to see your recent articles
-- **Open article**: Click on any article in the menu to open it
-- **Refresh**: Use "Refresh Articles" to manually update the list
-- **Settings**: Access extension settings from the menu
+### Panel Menu
+
+- Click the Wallapocket icon in the panel to open the menu
+- View your recent articles
+- Click on an article to open it in your default browser
+- Use action buttons to manage articles:
+  - Archive/Unarchive
+  - Star/Unstar
+  - Copy URL
+  - Delete
+  - Edit title
+
+### Quick Save
+
+1. Click the "Quick save" option in the menu
+2. Enter the URL of the article you want to save
+3. Optionally provide a custom title
+4. Click "Save" to add the article to your Wallabag instance
 
 ## Requirements
 
-- GNOME Shell 48+
-- Wallabag server with API access
-- Network connectivity to your Wallabag instance
-
-## File Structure
-
-```
-wallapocket@inbalboa.github.io/
-├── extension.js          # Main extension code
-├── wallabagAPI.js       # Wallabag API integration
-├── prefs.js             # Settings/preferences UI
-├── metadata.json        # Extension metadata
-├── schemas/             # GSettings schema
-│   └── org.gnome.shell.extensions.wallapocket.gschema.xml
-├── Makefile            # Build and installation scripts
-└── README.md           # This file
-```
-
-## Development
-
-To contribute or modify the extension:
-
-1. Make your changes
-2. Test with `make install`
-3. Submit a pull request
+- GNOME Shell 48 or later
+- A Wallabag instance (self-hosted or wallabag.it)
+- API credentials from your Wallabag instance
 
 ## License
 
-This extension is released under the GNU GPLv3 License.
+This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## Acknowledgments
 
-For issues and support, please visit the project repository or create an issue.
+[Wallabag](https://www.wallabag.org/) for the nice read-it-later service which I can use after the Pocket sunset.
+

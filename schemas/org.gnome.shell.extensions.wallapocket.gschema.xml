@@ -4,44 +4,78 @@
     <key name="server-url" type="s">
       <default>"https://app.wallabag.it"</default>
       <summary>Wallabag server URL</summary>
-      <description>The URL of your Wallabag server (e.g., https://wallabag.example.com)</description>
+      <description>URL of your Wallabag instance</description>
     </key>
     <key name="client-id" type="s">
-      <default>""</default>
-      <summary>OAuth client ID</summary>
-      <description>The OAuth client ID for API access</description>
+      <default>''</default>
+      <summary>Client ID</summary>
+      <description>Wallabag API client ID</description>
     </key>
     <key name="client-secret" type="s">
-      <default>""</default>
-      <summary>OAuth client secret</summary>
-      <description>The OAuth client secret for API access</description>
+      <default>''</default>
+      <summary>Client Secret</summary>
+      <description>Wallabag API client secret</description>
     </key>
     <key name="username" type="s">
-      <default>""</default>
+      <default>''</default>
       <summary>Username</summary>
-      <description>Your Wallabag username</description>
+      <description>Wallabag username</description>
     </key>
     <key name="password" type="s">
-      <default>""</default>
+      <default>''</default>
       <summary>Password</summary>
-      <description>Your Wallabag password</description>
+      <description>Wallabag password</description>
     </key>
     <key name="refresh-interval" type="i">
       <default>5</default>
       <range min="0" max="60"/>
       <summary>Auto-refresh interval</summary>
-      <description>How often to refresh the articles list in minutes (0 = disabled)</description>
+      <description>How often to refresh the articles in minutes (0 to disable)</description>
+    </key>
+    <key name="max-articles" type="i">
+      <default>10</default>
+      <summary>Maximum number of articles</summary>
+      <description>Maximum number of articles to show in the menu</description>
+    </key>
+    <key name="show-archive-button" type="b">
+      <default>true</default>
+      <summary>Show read/unread button</summary>
+      <description>Allow marking articles as read/unread</description>
+    </key>
+    <key name="show-star-button" type="b">
+      <default>true</default>
+      <summary>Show star/unstar button</summary>
+      <description>Allow adding/removing articles from favorites</description>
+    </key>
+    <key name="show-copy-button" type="b">
+      <default>true</default>
+      <summary>Show copy button</summary>
+      <description>Allow copying article URLs to clipboard</description>
+    </key>
+    <key name="show-delete-button" type="b">
+      <default>true</default>
+      <summary>Show delete button</summary>
+      <description>Allow deleting articles</description>
+    </key>
+    <key name="show-edit-title-button" type="b">
+      <default>true</default>
+      <summary>Show edit title button</summary>
+      <description>Allow editing article titles</description>
     </key>
     <key name="show-notifications" type="b">
       <default>true</default>
       <summary>Show notifications</summary>
-      <description>Whether to show notifications when articles are saved</description>
+      <description>Be verbose - show notifications about adding new article, deleting, editing, etc</description>
     </key>
-    <key name="max-articles" type="i">
-      <default>10</default>
-      <range min="1" max="20"/>
-      <summary>Maximum articles in menu</summary>
-      <description>Number of recent articles to show in the panel menu</description>
+    <key name="show-new-article-notifications" type="b">
+      <default>true</default>
+      <summary>Show new article notifications</summary>
+      <description>Show notifications when new articles are found</description>
+    </key>
+    <key name="re-save-unsuccessfully-saved-articles" type="b">
+      <default>true</default>
+      <summary>Re-save unsuccessfully saved articles</summary>
+      <description>Workaround when the Wallabag instanse got banned by the site while trying to get content</description>
     </key>
   </schema>
 </schemalist>

@@ -1,5 +1,5 @@
 UUID='wallapocket@inbalboa.github.io'
-TAG=`jq '.version' metadata.json`
+TAG=`jq -r '."version-name"' metadata.json`
 
 check:
 	@printf "==> checking the working tree... "
@@ -32,7 +32,6 @@ clean:
 
 build: clean
 	@printf "==> packaging...\n"
-	@glib-compile-schemas schemas
 	@gnome-extensions pack --force \
 	--extra-source="LICENSE" \
 	--extra-source="api.js" \

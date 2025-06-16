@@ -69,7 +69,7 @@ class QuickSaveDialog extends ModalDialog.ModalDialog {
         const title = this._titleEntry.get_text().trim();
 
         try {
-            await this._api.saveArticle(url, title || null, null, [], this._resave);
+            await this._api.saveArticle(url, title || null, title || null, [], this._resave);
             this._notifications.showInfo(_('Article saved successfully'));
             if (this._refreshCallback)
                 this._refreshCallback();

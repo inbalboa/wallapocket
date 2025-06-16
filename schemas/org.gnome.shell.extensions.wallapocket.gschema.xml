@@ -73,7 +73,7 @@
       <description>Show notifications when new articles are found</description>
     </key>
     <key name="re-save-unsuccessfully-saved-articles" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Re-save unsuccessfully saved articles</summary>
       <description>Workaround when the Wallabag instanse got banned by the site while trying to get content</description>
     </key>

@@ -95,15 +95,17 @@ export class WallabagApi {
         if (tags.length > 0)
             data.tags = tags.join(',');
 
-        const respBody =  await this._apiRequest('/entries.json', 'POST', data);
-        if (!tryToReSave || respBody.http_code >= 200 && respBody.http_code < 300)
+        const respBody = await this._apiRequest('/entries.json', 'POST', data);
+        const httpCode = parseInt(respBody.http_status || 200);
+        if (!tryToReSave || httpCode >= 200 && httpCode < 300)
             return respBody;
 
-        // delete and try to add again with a normal url and title
+        // delete and try to add again with unbroken url and title
         await this.deleteArticle(respBody.id);
-        const titleByPage = await this._getPageTitle(respBody.origin_url);
-        const newTitle = titleByPage || respBody.origin_url;
-        return await this.saveArticle(respBody.origin_url, newTitle, newTitle, [], false);
+        const originUrl = respBody.origin_url || respBody.given_url;
+        const titleByPage = await this._getPageTitle(originUrl);
+        const newTitle = titleByPage || originUrl;
+        return await this.saveArticle(originUrl, newTitle, newTitle, [], false);
     }
 
     async _getPageTitle(url) {

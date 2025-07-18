@@ -79,8 +79,18 @@ export class WallabagApi {
             message.get_request_headers().append('Content-Type', 'application/json');
         }
 
-        const response = await this._sendRequest(message);
-        return JSON.parse(response);
+        try {
+            const response = await this._sendRequest(message);
+            return JSON.parse(response);
+        } catch (e) {
+            if (e.message.includes('HTTP 401')) {
+                console.log('Token has expired, refreshing and retrying...');
+                this.resetToken();
+                return this._apiRequest(endpoint, method, data);
+            }
+
+            throw e;
+        }
     }
 
     async saveArticle(url, title = null, content = null, tags = [], tryToReSave = true) {

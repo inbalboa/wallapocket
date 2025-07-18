@@ -2,6 +2,8 @@
 
 A GNOME Shell extension that provides quick access to your Wallabag articles directly from your desktop panel.
 
+![Extension Screenshot](screenshot.png)
+
 ## Features
 
 - Quick access to your Wallabag articles from the GNOME panel

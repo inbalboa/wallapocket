@@ -114,9 +114,10 @@ class WallapocketIndicator extends PanelMenu.Button {
             this._lastUpdateTime = null;
             this._articles = [];
         }
+        const prevLastUpdateTime = this._lastUpdateTime;
         try {
-            const newArticles = await this._api.getRecentArticles(this._lastUpdateTime);
             this._lastUpdateTime = Date.now();
+            const newArticles = await this._api.getRecentArticles(this._lastUpdateTime);
             let deletedUrls = [];
             if (this._articles.length > 0) {
                 const existingUrls = this._articles.map(a => a.hashed_url);
@@ -139,6 +140,7 @@ class WallapocketIndicator extends PanelMenu.Button {
                 this._updateArticlesList();
             }
         } catch (e) {
+            this._lastUpdateTime = prevLastUpdateTime;
             console.error('Failed to fetch articles:', e);
             this._notifications.showError(_('Failed to fetch articles'));
         }
@@ -192,15 +194,13 @@ class WallapocketIndicator extends PanelMenu.Button {
     }
 });
 
-const ExtensionIcons = GObject.registerClass({
-}, class ExtensionIcons extends GObject.Object {
+const ExtensionIcons = GObject.registerClass({}, class ExtensionIcons extends GObject.Object {
     _init(extensionDir) {
         this._extensionDir = extensionDir;
         this.iconTheme = new St.IconTheme();
     }
 
     _isLightTheme() {
-    // Check if shell theme is dark
         const themeContext = St.ThemeContext.get_for_stage(global.stage);  // eslint-disable-line no-undef
         const theme = themeContext.get_theme();
 
@@ -217,7 +217,7 @@ const ExtensionIcons = GObject.registerClass({
 
         const themeAwareIconName = `${iconName}-${this._isLightTheme() ? 'dark' : 'light'}`;
         const iconPath = this._extensionDir.get_child('icons').get_child(`${themeAwareIconName}.svg`).get_path();
-        return Gio.FileIcon.new(Gio.File.new_for_path(iconPath));
+        return Gio.icon_new_for_string(iconPath);
     }
 });
 

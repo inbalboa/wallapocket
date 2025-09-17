@@ -106,7 +106,7 @@ export class WallabagApi {
             data.tags = tags.join(',');
 
         const respBody = await this._apiRequest('/entries.json', 'POST', data);
-        const httpCode = parseInt(respBody.http_status || 200);
+        const httpCode = parseInt(respBody.http_status || 200, 10);
         if (!tryToReSave || httpCode >= 200 && httpCode < 300)
             return respBody;
 
@@ -165,7 +165,7 @@ export class WallabagApi {
         };
 
         const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-        if (titleMatch && titleMatch[1])
+        if (titleMatch?.[1])
             return titleMatch[1].trim().replace(/&[^;]+;/g, e => entities[e] || e);
         return null;
     }

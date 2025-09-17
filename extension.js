@@ -133,7 +133,7 @@ class WallapocketIndicator extends PanelMenu.Button {
 
                 // Show notification for new articles
                 if (!force)
-                    uniqueNewArticles.forEach(a => this._notifications.showArticleNotification(a));
+                    uniqueNewArticles.forEach(a => { this._notifications.showArticleNotification(a) });
             }
             if (force || newArticles.length > 0 || deletedUrls.length > 0) {
                 this._updateArticleCount();
@@ -171,8 +171,9 @@ class WallapocketIndicator extends PanelMenu.Button {
         const showCopyButton = this._settings.get_boolean('show-copy-button');
         const showDeleteButton = this._settings.get_boolean('show-delete-button');
         const showEditTitleButton = this._settings.get_boolean('show-edit-title-button');
-        this._articles.slice(0, this._maxArticles).forEach(a =>
-            this._recentSection.addMenuItem(new ArticleMenuItem(a, this._api, this._notifications, () => this._refreshArticles(true), showArchiveButton, showStarButton, showCopyButton, showDeleteButton, showEditTitleButton))
+        this._articles.slice(0, this._maxArticles).forEach(a => {
+                this._recentSection.addMenuItem(new ArticleMenuItem(a, this._api, this._notifications, () => this._refreshArticles(true), showArchiveButton, showStarButton, showCopyButton, showDeleteButton, showEditTitleButton))
+            }
         );
     }
 

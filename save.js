@@ -87,7 +87,7 @@ class QuickSaveDialog extends ModalDialog.ModalDialog {
 
     _fillUrlFromClipboard() {
         const clipboard = St.Clipboard.get_default();
-        clipboard.get_text(St.ClipboardType.CLIPBOARD, (cb, text) => {
+        clipboard.get_text(St.ClipboardType.CLIPBOARD, (_cb, text) => {
             if (this._isValidHttpUrl(text)) {
                 this._urlEntry.set_text(text.trim());
                 this._urlEntry.grab_key_focus();

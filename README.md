@@ -21,6 +21,7 @@ A GNOME Shell extension that provides quick access to your Wallabag articles dir
    git clone https://github.com/inbalboa/wallapocket.git
    cd wallapocket
    make install
+   ```
 2. Restart GNOME Shell
 3. Enable the extension in GNOME Extensions app
 

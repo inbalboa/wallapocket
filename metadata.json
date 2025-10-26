@@ -4,7 +4,10 @@
   "description": "Wallabag integration for GNOME Shell - save links and view articles",
   "version": 1,
   "version-name": "1.0.0",
-  "shell-version": ["48"],
+  "shell-version": [
+    "48",
+    "49"
+  ],
   "url": "https://github.com/inbalboa/wallapocket",
   "settings-schema": "org.gnome.shell.extensions.wallapocket"
 }

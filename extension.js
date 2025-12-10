@@ -34,6 +34,7 @@ class WallapocketIndicator extends PanelMenu.Button {
             gicon: this._icons.getCustomIcon('wallapocket'),
             style_class: 'system-status-icon',
         });
+        icon.set_style('padding-right: 0px; padding-left: 0px;');
         hbox.add_child(icon);
         this._countLabel = new St.Label({
             text: '',

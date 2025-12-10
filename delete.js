@@ -36,16 +36,17 @@ class DeleteConfirmationDialog extends ModalDialog.ModalDialog {
         ]);
     }
 
-    async _delete() {
-        try {
-            await this._api.deleteArticle(this._article.id);
-            this._notifications.showInfo(_('Article deleted successfully'));
-            if (this._refreshCallback)
-                this._refreshCallback();
-            this.close();
-        } catch (e) {
-            console.error('Failed to delete article:', e);
-            this._notifications.showError(_('Failed to delete article'));
-        }
+    _delete() {
+        this.close();
+        this._api.deleteArticle(this._article.id)
+            .then(() => {
+                this._notifications.showInfo(_('Article deleted successfully'));
+                if (this._refreshCallback)
+                    this._refreshCallback();
+            })
+            .catch(e => {
+                console.error('Failed to delete article:', e);
+                this._notifications.showError(_('Failed to delete article'));
+            });
     }
 });

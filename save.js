@@ -61,20 +61,23 @@ class QuickSaveDialog extends ModalDialog.ModalDialog {
         ]);
     }
 
-    async _save() {
+    _save() {
         const url = this._urlEntry.get_text().trim();
         if (!url)
             return;
 
         const title = this._titleEntry.get_text().trim();
+        this.close();
+        this._notifications.showInfo(_('Saving article...'));
+        this._saveInBackground(url, title);
+    }
 
+    async _saveInBackground(url, title) {
         try {
             await this._api.saveArticle(url, title || null, title || null, [], this._resave);
             this._notifications.showInfo(_('Article saved successfully'));
             if (this._refreshCallback)
                 this._refreshCallback();
-
-            this.close();
         } catch (e) {
             console.error('Failed to save article:', e);
             this._notifications.showError(_('Failed to save article'));

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
@@ -302,7 +304,7 @@ export const AboutPage = GObject.registerClass(class WallapocketAboutPage extend
         this.add(extensionInfoGroup);
         // -----------------------------------------------------------------------
 
-        const licenseLabel = _('This project is licensed under the GPL-3.0 License.');
+        const licenseLabel = _('This project is licensed under the GPL-3.0-or-later License.');
         const urlLabel = _('See the %sLicense%s for details.').format('<a href="https://www.gnu.org/licenses/gpl.txt">', '</a>');
 
         const gnuSoftwareGroup = new Adw.PreferencesGroup();

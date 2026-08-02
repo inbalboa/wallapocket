@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import GLib from 'gi://GLib';
 import Soup from 'gi://Soup';
 

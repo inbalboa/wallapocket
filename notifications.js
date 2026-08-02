@@ -62,7 +62,7 @@ export class NotificationManager {
                 title: this._extension.metadata.name,
                 icon: this._icons.getCustomIcon('wallapocket-notif'),
             });
-            this._notificationSource.connect('destroy', _source => {
+            this._notificationSource.connect('destroy', () => {
                 this._notificationSource = null;
             });
             Main.messageTray.add(this._notificationSource);

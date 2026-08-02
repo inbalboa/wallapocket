@@ -6,7 +6,7 @@ import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 export const EditTitleDialog = GObject.registerClass(
-class EditTitleDialog extends ModalDialog.ModalDialog {
+class WallapocketEditTitleDialog extends ModalDialog.ModalDialog {
     _init(article, api, notifications, refreshCallback) {
         super._init({styleClass: 'run-dialog'});
 

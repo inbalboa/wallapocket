@@ -5,7 +5,7 @@ import Clutter from 'gi://Clutter';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 export const DeleteConfirmationDialog = GObject.registerClass(
-class DeleteConfirmationDialog extends ModalDialog.ModalDialog {
+class WallapocketDeleteConfirmationDialog extends ModalDialog.ModalDialog {
     _init(article, api, notifications, refreshCallback) {
         super._init({
             styleClass: 'delete-confirmation-dialog',

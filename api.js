@@ -115,7 +115,7 @@ export class WallabagApi {
         const originUrl = respBody.origin_url || respBody.given_url;
         const titleByPage = await this._getPageTitle(originUrl);
         const newTitle = titleByPage || originUrl;
-        return await this.saveArticle(originUrl, newTitle, newTitle, [], false);
+        return this.saveArticle(originUrl, newTitle, newTitle, [], false);
     }
 
     async _getPageTitle(url) {
@@ -179,28 +179,28 @@ export class WallabagApi {
         return response._embedded?.items || [];
     }
 
-    async deleteArticle(id) {
-        return await this._apiRequest(`/entries/${id}.json`, 'DELETE');
+    deleteArticle(id) {
+        return this._apiRequest(`/entries/${id}.json`, 'DELETE');
     }
 
-    async markAsRead(id) {
-        return await this._apiRequest(`/entries/${id}.json`, 'PATCH', {archive: 1});
+    markAsRead(id) {
+        return this._apiRequest(`/entries/${id}.json`, 'PATCH', {archive: 1});
     }
 
-    async markAsUnread(id) {
-        return await this._apiRequest(`/entries/${id}.json`, 'PATCH', {archive: 0});
+    markAsUnread(id) {
+        return this._apiRequest(`/entries/${id}.json`, 'PATCH', {archive: 0});
     }
 
-    async star(id) {
-        return await this._apiRequest(`/entries/${id}.json`, 'PATCH', {starred: 1});
+    star(id) {
+        return this._apiRequest(`/entries/${id}.json`, 'PATCH', {starred: 1});
     }
 
-    async unstar(id) {
-        return await this._apiRequest(`/entries/${id}.json`, 'PATCH', {starred: 0});
+    unstar(id) {
+        return this._apiRequest(`/entries/${id}.json`, 'PATCH', {starred: 0});
     }
 
-    async updateTitle(id, title) {
-        return await this._apiRequest(`/entries/${id}.json`, 'PATCH', {title});
+    updateTitle(id, title) {
+        return this._apiRequest(`/entries/${id}.json`, 'PATCH', {title});
     }
 
     async getDeletedEntries(hashedUrls) {

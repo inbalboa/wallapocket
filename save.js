@@ -6,7 +6,7 @@ import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 export const QuickSaveDialog = GObject.registerClass(
-class QuickSaveDialog extends ModalDialog.ModalDialog {
+class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
     _init(api, notifications, resave, refreshCallback) {
         super._init({styleClass: 'run-dialog'});
 

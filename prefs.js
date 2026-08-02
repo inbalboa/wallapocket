@@ -21,7 +21,7 @@ export default class WallapocketPreferences extends ExtensionPreferences {
     }
 }
 
-const WallapocketPrefsWidget = GObject.registerClass(class WallapocketPrefsWidget extends Adw.PreferencesPage {
+const WallapocketPrefsWidget = GObject.registerClass(class WallapocketPrefsPage extends Adw.PreferencesPage {
     _init(settings) {
         super._init({
             title: _('Settings'),

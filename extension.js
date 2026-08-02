@@ -14,7 +14,7 @@ import {QuickSaveDialog} from './save.js';
 import {NotificationManager} from './notifications.js';
 
 const WallapocketIndicator = GObject.registerClass(
-class WallapocketIndicator extends PanelMenu.Button {
+class WallapocketPanelIndicator extends PanelMenu.Button {
     _init(extension, icons) {
         super._init(0.0, 'Wallapocket');
 
@@ -199,14 +199,14 @@ class WallapocketIndicator extends PanelMenu.Button {
     }
 });
 
-const ExtensionIcons = GObject.registerClass({}, class ExtensionIcons extends GObject.Object {
+const ExtensionIcons = GObject.registerClass({}, class WallapocketExtensionIcons extends GObject.Object {
     _init(extensionDir) {
         this._extensionDir = extensionDir;
         this.iconTheme = new St.IconTheme();
     }
 
     _isLightTheme() {
-        const themeContext = St.ThemeContext.get_for_stage(global.stage);  // eslint-disable-line no-undef
+        const themeContext = St.ThemeContext.get_for_stage(global.stage);
         const theme = themeContext.get_theme();
 
         // Some heuristics to detect light themes

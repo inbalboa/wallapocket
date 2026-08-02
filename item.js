@@ -10,7 +10,7 @@ import {DeleteConfirmationDialog} from './delete.js';
 import {EditTitleDialog} from './editTitle.js';
 
 export const ArticleMenuItem = GObject.registerClass(
-class ArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
+class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
     _init(article, api, notifications, refreshCallback, showArchiveButton, showStarButton, showCopyButton, showDeleteButton, showEditTitleButton) {
         super._init({
             reactive: true,

@@ -18,7 +18,7 @@ import {NotificationManager} from './notifications.js';
 const WallapocketIndicator = GObject.registerClass(
 class WallapocketPanelIndicator extends PanelMenu.Button {
     _init(extension, icons) {
-        super._init(0.0, 'Wallapocket');
+        super._init(0.5, 'Wallapocket');
 
         this._extension = extension;
         this._icons = icons;

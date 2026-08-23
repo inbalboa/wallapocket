@@ -39,7 +39,11 @@ build: clean
 	--extra-source="save.js" \
 	--extra-source="item.js" \
 	--extra-source="editTitle.js" \
+	--extra-source="icons.js" \
+	--extra-source="indicator.js" \
 	--extra-source="notifications.js" \
+	--extra-source="util.js" \
+	--extra-source="prefs" \
 	--extra-source="icons"
 
 release: check tag pub

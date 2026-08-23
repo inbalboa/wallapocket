@@ -10,10 +10,13 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {DeleteConfirmationDialog} from './delete.js';
 import {EditTitleDialog} from './editTitle.js';
+import {isCancelled} from './util.js';
+
+const MAX_TITLE_LENGTH = 50;
 
 export const ArticleMenuItem = GObject.registerClass(
 class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
-    _init(article, api, notifications, refreshCallback, showArchiveButton, showStarButton, showCopyButton, showDeleteButton, showEditTitleButton) {
+    _init(article, api, notifications, refreshCallback, buttonVisibility) {
         super._init({
             reactive: true,
             can_focus: true,
@@ -24,8 +27,8 @@ class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
         this._api = api;
         this._notifications = notifications;
         this._refreshCallback = refreshCallback;
+        this._dialog = null;
 
-        // main horizontal container
         const mainBox = new St.BoxLayout({
             vertical: false,
             x_expand: true,
@@ -33,7 +36,6 @@ class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
         });
         this.add_child(mainBox);
 
-        // content area for article info
         const contentBox = new St.BoxLayout({
             vertical: true,
             x_expand: true,
@@ -41,126 +43,80 @@ class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
         });
         mainBox.add_child(contentBox);
 
-        // article title
-        const mainLabel = new St.Label({
-            text: this._getTruncatedTitle(50),
+        contentBox.add_child(new St.Label({
+            text: this._getTruncatedTitle(MAX_TITLE_LENGTH),
             style_class: 'popup-menu-item-title',
             x_expand: true,
             x_align: Clutter.ActorAlign.START,
-        });
-        contentBox.add_child(mainLabel);
+        }));
 
-        // article domain
-        const domainLabel = new St.Label({
+        contentBox.add_child(new St.Label({
             text: this._getDomain(),
             style_class: 'popup-menu-item-subtitle',
             style: 'font-size: 0.8em; color: #888;',
-        });
-        contentBox.add_child(domainLabel);
+        }));
 
-        // actions container
         const actionsBox = new St.BoxLayout({
             vertical: false,
             x_align: Clutter.ActorAlign.END,
             style: 'spacing: 4px;',
         });
         mainBox.add_child(actionsBox);
+        this._createButtons(actionsBox, buttonVisibility);
 
-        // Conditionally create buttons based on settings
-        this._createButtons(actionsBox, showArchiveButton, showStarButton, showCopyButton, showDeleteButton, showEditTitleButton);
-
-        // connect main click handler for opening article
         this.connect('activate', () => this._openArticle());
     }
 
-    _createButtons(actionsBox, showArchiveButton, showStarButton, showCopyButton, showDeleteButton, showEditTitleButton) {
-        // archive/unarchive button
-        if (showArchiveButton) {
-            const archiveButton = new St.Button({
-                style_class: 'popup-menu-icon-button',
-                can_focus: true,
-                reactive: true,
-            });
-            const archiveIcon = new St.Icon({
-                icon_name: this._article.is_archived ? 'checkmark-symbolic' : 'bookmark-new-symbolic',
-                style_class: 'popup-menu-icon',
-            });
-            archiveButton.set_child(archiveIcon);
-            archiveButton.connect('clicked', () => this._toggleArchive());
-            actionsBox.add_child(archiveButton);
+    destroy() {
+        if (this._dialog) {
+            this._dialog.destroy();
+            this._dialog = null;
+        }
+        super.destroy();
+    }
+
+    _createButtons(actionsBox, buttonVisibility) {
+        if (buttonVisibility.archive) {
+            const iconName = this._article.is_archived ? 'checkmark-symbolic' : 'bookmark-new-symbolic';
+            this._addIconButton(actionsBox, iconName, () => this._toggleArchive());
         }
 
-        // star/unstar button
-        if (showStarButton) {
-            const starButton = new St.Button({
-                style_class: 'popup-menu-icon-button',
-                can_focus: true,
-                reactive: true,
-            });
-            const starIcon = new St.Icon({
-                icon_name: this._article.is_starred ? 'starred-symbolic' : 'non-starred-symbolic',
-                style_class: 'popup-menu-icon',
-            });
-            starButton.set_child(starIcon);
-            starButton.connect('clicked', () => this._toggleStar());
-            actionsBox.add_child(starButton);
+        if (buttonVisibility.star) {
+            const iconName = this._article.is_starred ? 'starred-symbolic' : 'non-starred-symbolic';
+            this._addIconButton(actionsBox, iconName, () => this._toggleStar());
         }
 
-        // copy button
-        if (showCopyButton) {
-            const copyButton = new St.Button({
-                style_class: 'popup-menu-icon-button',
-                can_focus: true,
-                reactive: true,
-            });
-            const copyIcon = new St.Icon({
-                icon_name: 'edit-copy-symbolic',
-                style_class: 'popup-menu-icon',
-            });
-            copyButton.set_child(copyIcon);
-            copyButton.connect('clicked', () => {
+        if (buttonVisibility.copy) {
+            this._addIconButton(actionsBox, 'edit-copy-symbolic', () => {
                 this._copyArticleUrl();
-                this._parent._getTopMenu().close();
+                this._getTopMenu().close();
             });
-            actionsBox.add_child(copyButton);
         }
 
-        // edit title button
-        if (showEditTitleButton) {
-            const editTitleButton = new St.Button({
-                style_class: 'popup-menu-icon-button',
-                can_focus: true,
-                reactive: true,
-            });
-            const editTitleIcon = new St.Icon({
-                icon_name: 'document-edit-symbolic',
-                style_class: 'popup-menu-icon',
-            });
-            editTitleButton.set_child(editTitleIcon);
-            editTitleButton.connect('clicked', () => this._editTitle());
-            actionsBox.add_child(editTitleButton);
-        }
+        if (buttonVisibility.editTitle)
+            this._addIconButton(actionsBox, 'document-edit-symbolic', () => this._editTitle());
 
-        // delete button
-        if (showDeleteButton) {
-            const deleteButton = new St.Button({
-                style_class: 'popup-menu-icon-button',
-                can_focus: true,
-                reactive: true,
-            });
-            const deleteIcon = new St.Icon({
-                icon_name: 'edit-delete-symbolic',
+        if (buttonVisibility.delete)
+            this._addIconButton(actionsBox, 'edit-delete-symbolic', () => this._deleteArticle());
+    }
+
+    _addIconButton(actionsBox, iconName, callback) {
+        const button = new St.Button({
+            style_class: 'popup-menu-icon-button',
+            can_focus: true,
+            reactive: true,
+            child: new St.Icon({
+                icon_name: iconName,
                 style_class: 'popup-menu-icon',
-            });
-            deleteButton.set_child(deleteIcon);
-            deleteButton.connect('clicked', () => this._deleteArticle());
-            actionsBox.add_child(deleteButton);
-        }
+            }),
+        });
+        button.connect('clicked', callback);
+        actionsBox.add_child(button);
     }
 
     _getTruncatedTitle(maxLength) {
         if (this._article.title.length > maxLength)
-            return `${this._article.title.substr(0, maxLength - 3)}...`;
+            return `${this._article.title.slice(0, maxLength - 3)}...`;
 
         return this._article.title;
     }
@@ -170,7 +126,7 @@ class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
             return GLib.Uri.parse(this._article.url, GLib.UriFlags.NONE).get_host().replace('www.', '');
         } catch (e) {
             console.error(`Failed to parse URL ${this._article.url}:`, e);
-            return '<Invalid URL>';
+            return _('<Invalid URL>');
         }
     }
 
@@ -194,6 +150,9 @@ class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
             }
             this._refreshCallback();
         } catch (e) {
+            if (isCancelled(e))
+                return;
+
             console.error('Failed to toggle marked status:', e);
             this._notifications.showError(_('Failed to toggle marked status'));
         }
@@ -210,27 +169,29 @@ class WallapocketArticleMenuItem extends PopupMenu.PopupBaseMenuItem {
             }
             this._refreshCallback();
         } catch (e) {
+            if (isCancelled(e))
+                return;
+
             console.error('Failed to toggle favorite status:', e);
             this._notifications.showError(_('Failed to toggle favorite status'));
         }
     }
 
     _copyArticleUrl() {
-        const clipboard = St.Clipboard.get_default();
-        clipboard.set_text(St.ClipboardType.CLIPBOARD, this._article.url);
+        St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, this._article.url);
     }
 
     _editTitle() {
-        const dialog = new EditTitleDialog(this._article, this._api, this._notifications, this._refreshCallback);
-        dialog.open();
+        this._openDialog(new EditTitleDialog(this._article, this._api, this._notifications, this._refreshCallback));
     }
 
     _deleteArticle() {
-        const dialog = new DeleteConfirmationDialog(this._article, this._api, this._notifications, this._refreshCallback);
-        dialog.open();
+        this._openDialog(new DeleteConfirmationDialog(this._article, this._api, this._notifications, this._refreshCallback));
     }
 
-    destroy() {
-        super.destroy();
+    _openDialog(dialog) {
+        this._dialog = dialog;
+        this._dialog.connect('destroy', () => (this._dialog = null));
+        this._dialog.open();
     }
 });

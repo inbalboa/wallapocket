@@ -7,6 +7,8 @@ import Clutter from 'gi://Clutter';
 import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {isCancelled} from './util.js';
+
 export const QuickSaveDialog = GObject.registerClass(
 class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
     _init(api, notifications, resave, refreshCallback) {
@@ -16,13 +18,12 @@ class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
         this._notifications = notifications;
         this._resave = resave;
         this._refreshCallback = refreshCallback;
+        this._selectAllId = null;
 
-        // URL section
-        const urlLabel = new St.Label({
+        this.contentLayout.add_child(new St.Label({
             text: _('Enter URL to save:'),
             style_class: 'run-dialog-label',
-        });
-        this.contentLayout.add_child(urlLabel);
+        }));
 
         this._urlEntry = new St.Entry({
             style_class: 'run-dialog-entry',
@@ -30,16 +31,13 @@ class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
             hint_text: 'https://...',
         });
         this.contentLayout.add_child(this._urlEntry);
-        this._fillUrlFromClipboard();
-        this._urlEntry.clutter_text.connect('activate', () => this._focusNextField());
+        this._urlEntry.clutter_text.connect('activate', () => this._titleEntry.grab_key_focus());
 
-        // Title section
-        const titleLabel = new St.Label({
+        this.contentLayout.add_child(new St.Label({
             text: _('Article title (optional):'),
             style_class: 'run-dialog-label',
             style: 'margin-top: 12px;',
-        });
-        this.contentLayout.add_child(titleLabel);
+        }));
 
         this._titleEntry = new St.Entry({
             style_class: 'run-dialog-entry',
@@ -48,6 +46,8 @@ class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
         });
         this.contentLayout.add_child(this._titleEntry);
         this._titleEntry.clutter_text.connect('activate', () => this._save());
+
+        this._fillUrlFromClipboard();
 
         this.setButtons([
             {
@@ -61,6 +61,19 @@ class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
                 default: true,
             },
         ]);
+    }
+
+    open() {
+        super.open();
+        this._urlEntry.grab_key_focus();
+    }
+
+    destroy() {
+        if (this._selectAllId) {
+            GLib.Source.remove(this._selectAllId);
+            this._selectAllId = null;
+        }
+        super.destroy();
     }
 
     _save() {
@@ -78,29 +91,31 @@ class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
         try {
             await this._api.saveArticle(url, title || null, title || null, [], this._resave);
             this._notifications.showInfo(_('Article saved successfully'));
-            if (this._refreshCallback)
-                this._refreshCallback();
+            this._refreshCallback();
         } catch (e) {
+            if (isCancelled(e))
+                return;
+
             console.error('Failed to save article:', e);
             this._notifications.showError(_('Failed to save article'));
         }
     }
 
-    _focusNextField() {
-        this._titleEntry.grab_key_focus();
-    }
-
     _fillUrlFromClipboard() {
-        const clipboard = St.Clipboard.get_default();
-        clipboard.get_text(St.ClipboardType.CLIPBOARD, (_cb, text) => {
-            if (this._isValidHttpUrl(text)) {
-                this._urlEntry.set_text(text.trim());
-                this._urlEntry.grab_key_focus();
-                GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-                    this._urlEntry.clutter_text.set_selection(0, -1);
-                    return GLib.SOURCE_REMOVE;
-                });
-            }
+        St.Clipboard.get_default().get_text(St.ClipboardType.CLIPBOARD, (_clipboard, text) => {
+            if (!this._isValidHttpUrl(text))
+                return;
+
+            this._urlEntry.set_text(text.trim());
+            this._urlEntry.grab_key_focus();
+
+            if (this._selectAllId)
+                GLib.Source.remove(this._selectAllId);
+            this._selectAllId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+                this._urlEntry.clutter_text.set_selection(0, -1);
+                this._selectAllId = null;
+                return GLib.SOURCE_REMOVE;
+            });
         });
     }
 
@@ -110,10 +125,5 @@ class WallapocketQuickSaveDialog extends ModalDialog.ModalDialog {
 
         const trimmed = text.trim().toLowerCase();
         return trimmed.startsWith('https://') || trimmed.startsWith('http://');
-    }
-
-    open() {
-        super.open();
-        this._urlEntry.grab_key_focus();
     }
 });

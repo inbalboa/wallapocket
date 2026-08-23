@@ -1,7 +1,7 @@
 {
   "uuid": "wallapocket@inbalboa.github.io",
   "name": "Wallapocket",
-  "description": "Wallabag integration for GNOME Shell - save links and view articles",
+  "description": "Wallabag integration for GNOME Shell - save links and view articles.\n\nClipboard access: the Quick save dialog reads the clipboard to pre-fill the URL field, and the copy button on an article writes that article's URL to the clipboard. Clipboard contents are never sent anywhere without an explicit action.",
   "version": 2,
   "version-name": "1.1.1",
   "shell-version": ["48", "49", "50"],

@@ -7,6 +7,8 @@ import Clutter from 'gi://Clutter';
 import St from 'gi://St';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {isCancelled} from './util.js';
+
 export const EditTitleDialog = GObject.registerClass(
 class WallapocketEditTitleDialog extends ModalDialog.ModalDialog {
     _init(article, api, notifications, refreshCallback) {
@@ -16,18 +18,18 @@ class WallapocketEditTitleDialog extends ModalDialog.ModalDialog {
         this._api = api;
         this._notifications = notifications;
         this._refreshCallback = refreshCallback;
+        this._selectAllId = null;
 
-        const label = new St.Label({
+        this.contentLayout.add_child(new St.Label({
             text: _('Edit article title:'),
             style_class: 'run-dialog-label',
-        });
-        this.contentLayout.add_child(label);
+        }));
 
         this._entry = new St.Entry({
             style_class: 'run-dialog-entry',
             can_focus: true,
-            text: this._article.title,
-            hint_text: this._article.title,
+            text: article.title,
+            hint_text: article.title,
         });
         this.contentLayout.add_child(this._entry);
         this._entry.clutter_text.connect('activate', () => this._save());
@@ -46,6 +48,27 @@ class WallapocketEditTitleDialog extends ModalDialog.ModalDialog {
         ]);
     }
 
+    open() {
+        super.open();
+        this._entry.grab_key_focus();
+
+        if (this._selectAllId)
+            GLib.Source.remove(this._selectAllId);
+        this._selectAllId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._entry.clutter_text.set_selection(0, -1);
+            this._selectAllId = null;
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    destroy() {
+        if (this._selectAllId) {
+            GLib.Source.remove(this._selectAllId);
+            this._selectAllId = null;
+        }
+        super.destroy();
+    }
+
     async _save() {
         const newTitle = this._entry.get_text().trim();
         if (!newTitle || newTitle === this._article.title)
@@ -57,17 +80,11 @@ class WallapocketEditTitleDialog extends ModalDialog.ModalDialog {
             this._refreshCallback();
             this.close();
         } catch (e) {
+            if (isCancelled(e))
+                return;
+
             console.error('Failed to update article title:', e);
             this._notifications.showError(_('Failed to update article title'));
         }
-    }
-
-    open() {
-        super.open();
-        this._entry.grab_key_focus();
-        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            this._entry.clutter_text.set_selection(0, -1);
-            return GLib.SOURCE_REMOVE;
-        });
     }
 });

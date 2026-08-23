@@ -7,68 +7,87 @@ import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 export class NotificationManager {
-    constructor(extension, icons) {
-        this._extension = extension;
+    constructor(appName, settings, icons) {
+        this._appName = appName;
+        this._settings = settings;
         this._icons = icons;
-        this._settings = extension.getSettings();
-        this._notificationSource = null;
+        this._source = null;
+        this._sourceDestroyId = null;
+    }
+
+    destroy() {
+        if (this._source) {
+            this._source.disconnect(this._sourceDestroyId);
+            this._sourceDestroyId = null;
+            this._source.destroy();
+            this._source = null;
+        }
+        this._settings = null;
+        this._icons = null;
     }
 
     showArticleNotification(article) {
         if (!this._settings.get_boolean('show-new-article-notifications'))
             return;
 
-        const notification = new MessageTray.Notification({
-            source: this._getSource(),
+        const notification = this._createNotification({
             title: _('New article'),
             body: article.title,
-            'icon-name': 'bookmark-new-symbolic',
+            iconName: 'bookmark-new-symbolic',
             urgency: MessageTray.Urgency.CRITICAL,
         });
 
         if (article.url)
             notification.addAction(_('Open Article'), () => Gio.AppInfo.launch_default_for_uri(article.url, null));
 
-        this._getSource().addNotification(notification);
+        this._source.addNotification(notification);
     }
 
     showError(message) {
-        // Error notifications are always shown
-        const notification = new MessageTray.Notification({
-            source: this._getSource(),
+        const notification = this._createNotification({
             title: _('Error'),
             body: message,
-            'icon-name': 'dialog-error-symbolic',
+            iconName: 'dialog-error-symbolic',
             urgency: MessageTray.Urgency.NORMAL,
         });
-        this._getSource().addNotification(notification);
+        this._source.addNotification(notification);
     }
 
     showInfo(message) {
         if (!this._settings.get_boolean('show-notifications'))
             return;
 
-        const notification = new MessageTray.Notification({
-            source: this._getSource(),
-            title: this._extension.metadata.name,
+        const notification = this._createNotification({
+            title: this._appName,
             body: message,
-            'icon-name': 'dialog-information-symbolic',
+            iconName: 'dialog-information-symbolic',
             urgency: MessageTray.Urgency.NORMAL,
         });
-        this._getSource().addNotification(notification);
+        this._source.addNotification(notification);
+    }
+
+    _createNotification({title, body, iconName, urgency}) {
+        return new MessageTray.Notification({
+            source: this._getSource(),
+            title,
+            body,
+            'icon-name': iconName,
+            urgency,
+        });
     }
 
     _getSource() {
-        if (!this._notificationSource) {
-            this._notificationSource = new MessageTray.Source({
-                title: this._extension.metadata.name,
+        if (!this._source) {
+            this._source = new MessageTray.Source({
+                title: this._appName,
                 icon: this._icons.getCustomIcon('wallapocket-notif'),
             });
-            this._notificationSource.connect('destroy', () => {
-                this._notificationSource = null;
+            this._sourceDestroyId = this._source.connect('destroy', () => {
+                this._source = null;
+                this._sourceDestroyId = null;
             });
-            Main.messageTray.add(this._notificationSource);
+            Main.messageTray.add(this._source);
         }
-        return this._notificationSource;
+        return this._source;
     }
 }

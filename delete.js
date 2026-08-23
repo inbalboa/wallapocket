@@ -6,6 +6,8 @@ import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
 import Clutter from 'gi://Clutter';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {isCancelled} from './util.js';
+
 export const DeleteConfirmationDialog = GObject.registerClass(
 class WallapocketDeleteConfirmationDialog extends ModalDialog.ModalDialog {
     _init(article, api, notifications, refreshCallback) {
@@ -18,11 +20,10 @@ class WallapocketDeleteConfirmationDialog extends ModalDialog.ModalDialog {
         this._notifications = notifications;
         this._refreshCallback = refreshCallback;
 
-        const content = new Dialog.MessageDialogContent({
+        this.contentLayout.add_child(new Dialog.MessageDialogContent({
             title: _('Delete confirmation'),
-            description: `Permanently Delete "${this._article.title}"?\n\nThis action cannot be undone.`,
-        });
-        this.contentLayout.add_child(content);
+            description: _('Permanently delete "%s"?\n\nThis action cannot be undone.').format(article.title),
+        }));
 
         this.setButtons([
             {
@@ -38,17 +39,18 @@ class WallapocketDeleteConfirmationDialog extends ModalDialog.ModalDialog {
         ]);
     }
 
-    _delete() {
+    async _delete() {
         this.close();
-        this._api.deleteArticle(this._article.id)
-            .then(() => {
-                this._notifications.showInfo(_('Article deleted successfully'));
-                if (this._refreshCallback)
-                    this._refreshCallback();
-            })
-            .catch(e => {
-                console.error('Failed to delete article:', e);
-                this._notifications.showError(_('Failed to delete article'));
-            });
+        try {
+            await this._api.deleteArticle(this._article.id);
+            this._notifications.showInfo(_('Article deleted successfully'));
+            this._refreshCallback();
+        } catch (e) {
+            if (isCancelled(e))
+                return;
+
+            console.error('Failed to delete article:', e);
+            this._notifications.showError(_('Failed to delete article'));
+        }
     }
 });

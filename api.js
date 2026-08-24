@@ -14,6 +14,9 @@ const USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
 ];
 
+// Wallabag compares `since` with a strict `>`, so step back a second to not miss entries created within the same second as the previous refresh
+const SINCE_OVERLAP_SECONDS = 1;
+
 const HTML_ENTITIES = {
     '&amp;': '&',
     '&lt;': '<',
@@ -74,7 +77,7 @@ export class WallabagApi {
     async getRecentArticles(since = null, limit = 999) {
         let url = `/entries.json?perPage=${limit}&order=desc&sort=created`;
         if (since)
-            url += `&since=${new Date(since).getTime()}`;
+            url += `&since=${Math.floor(since / 1000) - SINCE_OVERLAP_SECONDS}`;
 
         const response = await this._apiRequest(url);
         return response._embedded?.items || [];

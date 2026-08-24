@@ -141,10 +141,10 @@ class WallapocketPanelIndicator extends PanelMenu.Button {
             this._lastUpdateTime = null;
             this._articles = [];
         }
-        const prevLastUpdateTime = this._lastUpdateTime;
         try {
-            this._lastUpdateTime = Date.now();
+            const updateTime = Date.now();
             const newArticles = await this._api.getRecentArticles(this._lastUpdateTime);
+            this._lastUpdateTime = updateTime;
             let deletedUrls = [];
             if (this._articles.length > 0) {
                 const existingUrls = this._articles.map(a => a.hashed_url);
@@ -152,15 +152,16 @@ class WallapocketPanelIndicator extends PanelMenu.Button {
                 if (deletedUrls.length > 0)
                     this._articles = this._articles.filter(a => !deletedUrls.includes(a.hashed_url));
             }
+            let addedArticles = [];
             if (newArticles.length > 0) {
                 const existingIds = new Set(this._articles.map(a => a.id));
-                const uniqueNewArticles = newArticles.filter(a => !existingIds.has(a.id));
-                this._articles = [...uniqueNewArticles, ...this._articles];
+                addedArticles = newArticles.filter(a => !existingIds.has(a.id));
+                this._articles = [...addedArticles, ...this._articles];
 
                 if (!force)
-                    uniqueNewArticles.forEach(a => this._notifications.showArticleNotification(a));
+                    addedArticles.forEach(a => this._notifications.showArticleNotification(a));
             }
-            if (force || newArticles.length > 0 || deletedUrls.length > 0) {
+            if (force || addedArticles.length > 0 || deletedUrls.length > 0) {
                 this._updateArticleCount();
                 this._updateArticlesList();
             }
@@ -168,7 +169,6 @@ class WallapocketPanelIndicator extends PanelMenu.Button {
             if (isCancelled(e))
                 return;
 
-            this._lastUpdateTime = prevLastUpdateTime;
             console.error('Failed to fetch articles:', e);
             this._notifications.showError(_('Failed to fetch articles'));
         }
